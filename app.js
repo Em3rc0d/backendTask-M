@@ -1,6 +1,3 @@
-const dotenv = require('dotenv');
-dotenv.config(); // Cargar variables de entorno al inicio
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conectar a la base de datos usando la URI de la variable de entorno
+// Conectar a la base de datos
 const mongoUri = process.env.MONGODB_URI;
 
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })

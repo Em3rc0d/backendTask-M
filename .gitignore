@@ -1,3 +1,8 @@
 # Ignorar el archivo de configuración de entorno
 .env
-node
+
+# Ignorar el directorio de dependencias de Node.js
+node_modules/
+
+# Ignorar el directorio 'node' (si existe)
+node/

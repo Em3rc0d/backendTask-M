@@ -6,3 +6,4 @@ node_modules/
 
 # Ignorar el directorio 'node' (si existe)
 node/
+.vercel

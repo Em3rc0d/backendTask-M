@@ -4,9 +4,7 @@ const { response } = require('../app');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-    res.send('Tareas'); // Ruta de prueba
-})
+
 // Crear una nueva tarea
 router.post('/', async (req, res) => {
     try {

@@ -4,6 +4,16 @@ const { response } = require('../app');
 
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+    try {
+        const tasks = await Task.find();
+        res.send(tasks);
+    } catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 
 // Crear una nueva tarea
 router.post('/', async (req, res) => {

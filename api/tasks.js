@@ -5,7 +5,7 @@ const { response } = require('../app');
 const router = express.Router();
 
 router.get('/1', async (req, res) => {
-    response.send('hola');
+    res.send('hola');
 });
 
 

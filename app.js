@@ -22,7 +22,7 @@ async function connectToDatabase() {
         const db = await mongoose.connect(mongoUri, { 
             useNewUrlParser: true, 
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000 // Tiempo máximo de espera de 5 segundos
+            serverSelectionTimeoutMS: 20000 // Tiempo máximo de espera de 5 segundos
         });
         isConnected = db.connections[0].readyState === 1; // 1 significa conectado
         console.log("Conectado a MongoDB");

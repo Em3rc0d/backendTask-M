@@ -4,6 +4,11 @@ const { response } = require('../app');
 
 const router = express.Router();
 
+router.get('/1', async (req, res) => {
+    response.send('hola');
+});
+
+
 router.get('/', async (req, res) => {
     try {
         const tasks = await Task.find();

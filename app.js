@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const tasksRoute = require('./api/tasks');
+require('dotenv').config(); // Para cargar las variables de entorno
 
 const app = express();
 app.use(cors());
@@ -10,14 +11,34 @@ app.use(express.json());
 // Conectar a la base de datos
 const mongoUri = process.env.MONGODB_URI;
 
-mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('Conectado a MongoDB'))
-    .catch(err => console.error('Error de conexión a MongoDB:', err));
+let isConnected = false; // Variable para almacenar el estado de la conexión
+
+async function connectToDatabase() {
+    if (isConnected) {
+        console.log("Conexión a MongoDB ya está establecida.");
+        return;
+    }
+    try {
+        const db = await mongoose.connect(mongoUri, { 
+            useNewUrlParser: true, 
+            useUnifiedTopology: true,
+            serverSelectionTimeoutMS: 5000 // Tiempo máximo de espera de 5 segundos
+        });
+        isConnected = db.connections[0].readyState === 1; // 1 significa conectado
+        console.log("Conectado a MongoDB");
+    } catch (error) {
+        console.error("Error de conexión a MongoDB:", error);
+    }
+}
+
+// Llamada inicial para establecer la conexión
+connectToDatabase();
 
 // Rutas
 app.get('/', (req, res) => {
     res.send('API de tareas');
 });
+
 app.use('/tasks', tasksRoute);
 
 // Middleware para manejar errores

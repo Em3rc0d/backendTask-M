@@ -43,6 +43,18 @@ router.get('/:userId', async (req, res) => {
     }
 });
 
+// Obtener tareas por Gmail
+router.get('/:email', async (req, res) => {
+    try {
+        const tasks = await Task.find({ email: req.params.email });
+        res.send(tasks);
+    } catch (error) {
+        console.error('Error al obtener las tareas:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+
 // Actualizar una tarea
 router.put('/:id', async (req, res) => {
     try {
@@ -57,10 +69,36 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.put('/:email', async (req, res) => {
+    try {
+        const updatedTask = await Task.findOneAndUpdate({ email: req.params.email }, req.body, { new: true });
+        if (!updatedTask) {
+            return res.status(404).send('Tarea no encontrada');
+        }
+        res.send(updatedTask);
+    } catch (error) {
+        console.error('Error al actualizar la tarea:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
 // Eliminar una tarea
 router.delete('/:id', async (req, res) => {
     try {
         const deletedTask = await Task.findByIdAndDelete(req.params.id);
+        if (!deletedTask) {
+            return res.status(404).send('Tarea no encontrada');
+        }
+        res.status(204).send(); // No hay contenido que devolver
+    } catch (error) {
+        console.error('Error al eliminar la tarea:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+});
+
+router.delete('/:email', async (req, res) => {
+    try {
+        const deletedTask = await Task.findOneAndDelete({ email: req.params.email });
         if (!deletedTask) {
             return res.status(404).send('Tarea no encontrada');
         }

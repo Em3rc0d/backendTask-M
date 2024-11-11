@@ -10,6 +10,7 @@ app.use(express.json());
 
 // Conectar a la base de datos
 const mongoUri = process.env.MONGODB_URI;
+const weatherApiKey = process.env.WEATHER_API_KEY;
 
 let isConnected = false; // Variable para almacenar el estado de la conexión
 
@@ -46,5 +47,15 @@ app.use((err, req, res, next) => {
     console.error('Error en el servidor:', err);
     res.status(500).send('Error interno del servidor');
 });
+
+app.get('/api/weather', async (req, res) => {
+    const { lat, lon } = req.query;
+    try {
+      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=es`);
+      res.json(response.data);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener el clima' });
+    }
+  });
 
 module.exports = app; // Exporta la aplicación para que pueda ser utilizada en server.js

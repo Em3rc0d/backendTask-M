@@ -1,8 +1,22 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const router = express.Router();
+
+
+// Función para generar el JWT
+function generateJWT(user) {
+    // Crea el payload con la información del usuario que quieres incluir en el token
+    const payload = {
+        userId: user._id,
+        email: user.email
+    };
+    
+    // Genera el token con el payload y una clave secreta
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+    return token;
+}
 
 // Registro de un usuario
 router.post('/register', async (req, res) => {
@@ -15,6 +29,8 @@ router.post('/register', async (req, res) => {
 
         const newUser = new User({ email, password });
         await newUser.save();
+        console.log('Email:', email);
+        console.log('Contraseña proporcionada:', password);
 
         res.status(201).json({ message: 'Usuario registrado exitosamente' });
     } catch (error) {
@@ -23,28 +39,37 @@ router.post('/register', async (req, res) => {
     }
 });
 
+
 // Login del usuario
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
 
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
+    try {
+        // Buscar el usuario por email
+        const user = await User.findOne({ email });
+
+        if (!user) {
             return res.status(400).json({ error: 'Credenciales incorrectas' });
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // Comparar la contraseña proporcionada con el hash almacenado
+        console.log('Contraseña proporcionada:', password);
+        console.log('Contraseña encriptada:', user.password);
 
-        res.json({ token });
-    } catch (error) {
-        console.error('Error en el login:', error);
-        res.status(500).json({ error: 'Error al autenticar el usuario' });
+        if (password !== user.password) {
+            return res.status(400).json({ error: 'Credenciales incorrectas' });
+        }
+
+        // Si la contraseña es correcta, generar un JWT o lo que corresponda
+        const token = generateJWT(user); // Función para generar el JWT
+        return res.json({ token });
+
+    } catch (err) {
+        console.error('Error al autenticar usuario:', err);
+        return res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
 
 // Middleware para verificar el token
 function authenticateJWT(req, res, next) {

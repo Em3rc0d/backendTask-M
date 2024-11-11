@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Conectar a la base de datos
 const mongoUri = process.env.MONGODB_URI;
-const weatherApiKey = process.env.WEATHER_API_KEY;
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 
 let isConnected = false; // Variable para almacenar el estado de la conexión
 

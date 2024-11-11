@@ -8,7 +8,7 @@ require("dotenv").config(); // Para cargar las variables de entorno
 const app = express();
 app.use(
   cors({
-    origin: "https://backend-task-m.vercel.app",
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

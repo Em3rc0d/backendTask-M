@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { router: authRouter, authenticateJWT } = require('./api/auth');
 const tasksRoute = require('./api/tasks');
 require('dotenv').config(); // Para cargar las variables de entorno
 
@@ -40,22 +41,16 @@ app.get('/', (req, res) => {
     res.send('API de tareas');
 });
 
-app.use('/tasks', tasksRoute);
+// Rutas
+app.use('/auth', authRouter); // Ruta de autenticación
+
+// Protege las rutas de tareas con JWT
+app.use('/tasks', authenticateJWT, tasksRoute);
 
 // Middleware para manejar errores
 app.use((err, req, res, next) => {
     console.error('Error en el servidor:', err);
     res.status(500).send('Error interno del servidor');
 });
-
-app.get('/api/weather', async (req, res) => {
-    const { lat, lon } = req.query;
-    try {
-      const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=es`);
-      res.json(response.data);
-    } catch (error) {
-      res.status(500).json({ error: 'Error al obtener el clima' });
-    }
-  });
 
 module.exports = app; // Exporta la aplicación para que pueda ser utilizada en server.js
